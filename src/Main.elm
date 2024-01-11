@@ -1,9 +1,10 @@
 module Main exposing (Model, Msg, main)
 
 import Browser
-import Html exposing (Html, button, h3, main_, p, text)
+import Html exposing (Html, main_)
 import Html.Attributes
-import Html.Events exposing (onClick)
+import Html.Events
+import Inventory exposing (Inventory, Slot)
 
 
 
@@ -11,12 +12,14 @@ import Html.Events exposing (onClick)
 
 
 type alias Model =
-    Int
+    { inventory : Inventory
+    , selection : Maybe Int
+    }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( 0, Cmd.none )
+    ( Model (Inventory.new 4) Nothing, Cmd.none )
 
 
 
@@ -24,36 +27,61 @@ init _ =
 
 
 type Msg
-    = Increment
-    | Decrement
-    | Reset
+    = ClickedSlot Int Slot
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Increment ->
-            ( model + 1, Cmd.none )
+        ClickedSlot index (Just _) ->
+            ( { model | selection = Just index }, Cmd.none )
 
-        Decrement ->
-            ( model - 1, Cmd.none )
-
-        Reset ->
-            ( 0, Cmd.none )
+        ClickedSlot _ Nothing ->
+            ( model, Cmd.none )
 
 
 
 -- VIEW
 
 
+viewSlot : Maybe Int -> ( Int, Slot ) -> Html Msg
+viewSlot selection ( index, slot ) =
+    let
+        isSelected : Bool
+        isSelected =
+            selection
+                |> Maybe.map ((==) index)
+                |> Maybe.withDefault False
+    in
+    Html.button
+        [ Html.Events.onClick (ClickedSlot index slot)
+        , Html.Attributes.classList
+            [ ( "slot", True )
+            , ( "selected", isSelected )
+            ]
+        ]
+        [ Html.p [] [ Html.text (String.fromInt index) ]
+        , Html.p []
+            [ case slot of
+                Just item ->
+                    Html.text (String.fromInt item)
+
+                Nothing ->
+                    Html.text "empty"
+            ]
+        ]
+
+
 view : Model -> Html Msg
 view model =
     main_ [ Html.Attributes.id "app" ]
-        [ h3 [] [ text "Elm counter" ]
-        , p [] [ text <| String.fromInt model ]
-        , button [ onClick Increment ] [ text "+" ]
-        , button [ onClick Decrement ] [ text "-" ]
-        , button [ onClick Reset ] [ text "Reset" ]
+        [ Html.div
+            [ Html.Attributes.class "inventory"
+            ]
+            (model.inventory
+                |> Inventory.toList
+                |> List.map (viewSlot model.selection)
+            )
         ]
 
 
