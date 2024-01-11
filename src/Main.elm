@@ -5,6 +5,7 @@ import Html exposing (Html, main_)
 import Html.Attributes
 import Html.Events
 import Inventory exposing (Inventory, Slot)
+import Location exposing (Location)
 
 
 
@@ -12,14 +13,27 @@ import Inventory exposing (Inventory, Slot)
 
 
 type alias Model =
-    { inventory : Inventory Int
-    , selection : Maybe Int
+    { locations : List (Location Int)
+    , inventory : Inventory Int
+    , selection : Maybe ( Int, Int )
     }
 
 
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
+        [ Location "Forest" (Inventory.new 3)
+        , Location "Forest 2" (Inventory.new 3)
+        , Location "Forest 3" (Inventory.new 3)
+        , Location "Forest 4" (Inventory.new 3)
+        , Location "Forest 5" (Inventory.new 3)
+        , Location "Forest 6" (Inventory.new 3)
+        , Location "Forest 2" (Inventory.new 3)
+        , Location "Forest 3" (Inventory.new 3)
+        , Location "Forest 4" (Inventory.new 3)
+        , Location "Forest 5" (Inventory.new 3)
+        , Location "Forest 6" (Inventory.new 3)
+        ]
         (Inventory.new 4
             |> Inventory.insert 0 10
             |> Inventory.insert 2 20
@@ -34,15 +48,15 @@ init _ =
 
 
 type Msg
-    = ClickedSlot Int (Slot Int)
+    = ClickedSlot ( Int, Int ) (Slot Int)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ClickedSlot clickedIndex slot ->
+        ClickedSlot ( locationIndex, clickedIndex ) slot ->
             case model.selection of
-                Just selectedIndex ->
+                Just ( _, selectedIndex ) ->
                     ( { model
                         | inventory =
                             model.inventory
@@ -58,21 +72,32 @@ update msg model =
                             ( model, Cmd.none )
 
                         Just _ ->
-                            ( { model | selection = Just clickedIndex }, Cmd.none )
+                            ( { model | selection = Just ( locationIndex, clickedIndex ) }, Cmd.none )
 
 
 
 -- VIEW
 
 
-viewSlot : Maybe Int -> ( Int, Slot Int ) -> Html Msg
-viewSlot selection ( index, slot ) =
+viewLocation : Maybe ( Int, Int ) -> Int -> Location Int -> Html Msg
+viewLocation selection index location =
+    Html.div [ Html.Attributes.class "location" ]
+        [ Html.h3 [] [ Html.text location.name ]
+        , viewInventory selection index location.inventory
+        ]
+
+
+viewSlot : Int -> Maybe ( Int, Int ) -> ( Int, Slot Int ) -> Html Msg
+viewSlot locationIndex selection ( index, slot ) =
     let
         isSelected : Bool
         isSelected =
-            selection
-                |> Maybe.map ((==) index)
-                |> Maybe.withDefault False
+            case selection of
+                Just ( selectedLocation, selectedSlot ) ->
+                    selectedLocation == locationIndex && selectedSlot == index
+
+                Nothing ->
+                    False
 
         isEmpty : Bool
         isEmpty =
@@ -84,7 +109,7 @@ viewSlot selection ( index, slot ) =
                     False
     in
     Html.button
-        [ Html.Events.onClick (ClickedSlot index slot)
+        [ Html.Events.onClick (ClickedSlot ( locationIndex, index ) slot)
         , Html.Attributes.classList
             [ ( "slot", True )
             , ( "selected", isSelected )
@@ -103,16 +128,22 @@ viewSlot selection ( index, slot ) =
         ]
 
 
+viewInventory : Maybe ( Int, Int ) -> Int -> Inventory Int -> Html Msg
+viewInventory selection index inventory =
+    Html.div
+        [ Html.Attributes.class "inventory"
+        ]
+        (inventory
+            |> Inventory.toList
+            |> List.map (viewSlot index selection)
+        )
+
+
 view : Model -> Html Msg
 view model =
     main_ [ Html.Attributes.id "app" ]
-        [ Html.div
-            [ Html.Attributes.class "inventory"
-            ]
-            (model.inventory
-                |> Inventory.toList
-                |> List.map (viewSlot model.selection)
-            )
+        [ Html.div [ Html.Attributes.class "locations" ] (List.indexedMap (viewLocation model.selection) model.locations)
+        , viewInventory model.selection -1 model.inventory
         ]
 
 
