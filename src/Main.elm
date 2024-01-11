@@ -19,7 +19,14 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model (Inventory.new 4 |> Inventory.insert 0 10) Nothing, Cmd.none )
+    ( Model
+        (Inventory.new 4
+            |> Inventory.insert 0 10
+            |> Inventory.insert 2 20
+        )
+        Nothing
+    , Cmd.none
+    )
 
 
 
@@ -33,11 +40,20 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ClickedSlot index (Just _) ->
-            ( { model | selection = Just index }, Cmd.none )
+        ClickedSlot clickedIndex _ ->
+            case model.selection of
+                Just selectedIndex ->
+                    ( { model
+                        | inventory =
+                            model.inventory
+                                |> Inventory.switch selectedIndex clickedIndex
+                        , selection = Nothing
+                      }
+                    , Cmd.none
+                    )
 
-        ClickedSlot _ Nothing ->
-            ( model, Cmd.none )
+                Nothing ->
+                    ( { model | selection = Just clickedIndex }, Cmd.none )
 
 
 
@@ -60,14 +76,14 @@ viewSlot selection ( index, slot ) =
             , ( "selected", isSelected )
             ]
         ]
-        [ Html.p [] [ Html.text (String.fromInt index) ]
-        , Html.p []
+        [ -- Html.p [] [ Html.text (String.fromInt index) ]
+          Html.p []
             [ case slot of
                 Just item ->
                     Html.text (String.fromInt item)
 
                 Nothing ->
-                    Html.text "empty"
+                    Html.text ""
             ]
         ]
 

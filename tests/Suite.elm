@@ -55,4 +55,77 @@ inventory =
                         , ( 1, Nothing )
                         , ( 2, Nothing )
                         ]
+        , test "Remove item from valid, occupied slot" <|
+            \_ ->
+                Inventory.new 3
+                    |> Inventory.insert 1 0
+                    |> Inventory.remove 1
+                    |> Inventory.toList
+                    |> Expect.equalLists
+                        [ ( 0, Nothing )
+                        , ( 1, Nothing )
+                        , ( 2, Nothing )
+                        ]
+        , test "Remove item from out of range slot" <|
+            \_ ->
+                Inventory.new 3
+                    |> Inventory.insert 0 2
+                    |> Inventory.remove 20
+                    |> Inventory.toList
+                    |> Expect.equalLists
+                        [ ( 0, Just 2 )
+                        , ( 1, Nothing )
+                        , ( 2, Nothing )
+                        ]
+        , test "Get item from occupied slot in range" <|
+            \_ ->
+                Inventory.new 3
+                    |> Inventory.insert 0 2
+                    |> Inventory.get 0
+                    |> Expect.equal (Just 2)
+        , test "Get item from empty slot in range" <|
+            \_ ->
+                Inventory.new 3
+                    |> Inventory.get 0
+                    |> Expect.equal Nothing
+        , test "Get item from slot out of range" <|
+            \_ ->
+                Inventory.new 3
+                    |> Inventory.get 100
+                    |> Expect.equal Nothing
+        , test "Switch items, to slot is empty" <|
+            \_ ->
+                Inventory.new 3
+                    |> Inventory.insert 0 1
+                    |> Inventory.switch 0 2
+                    |> Inventory.toList
+                    |> Expect.equalLists
+                        [ ( 0, Nothing )
+                        , ( 1, Nothing )
+                        , ( 2, Just 1 )
+                        ]
+        , test "Switch items, both slots are occupied" <|
+            \_ ->
+                Inventory.new 3
+                    |> Inventory.insert 0 1
+                    |> Inventory.insert 2 2
+                    |> Inventory.switch 0 2
+                    |> Inventory.toList
+                    |> Expect.equalLists
+                        [ ( 0, Just 2 )
+                        , ( 1, Nothing )
+                        , ( 2, Just 1 )
+                        ]
+        , test "Switch items, same index" <|
+            \_ ->
+                Inventory.new 3
+                    |> Inventory.insert 0 1
+                    |> Inventory.insert 2 2
+                    |> Inventory.switch 0 0
+                    |> Inventory.toList
+                    |> Expect.equalLists
+                        [ ( 0, Just 1 )
+                        , ( 1, Nothing )
+                        , ( 2, Just 2 )
+                        ]
         ]

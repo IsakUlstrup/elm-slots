@@ -1,4 +1,13 @@
-module Inventory exposing (Inventory, Slot, insert, new, toList)
+module Inventory exposing
+    ( Inventory
+    , Slot
+    , get
+    , insert
+    , new
+    , remove
+    , switch
+    , toList
+    )
 
 import Dict exposing (Dict)
 
@@ -49,6 +58,40 @@ insert index item (Inventory inventory) =
 
         Nothing ->
             -- slot does not exist, return unchanged
+            Inventory inventory
+
+
+{-| Remove item at index
+-}
+remove : Int -> Inventory a -> Inventory a
+remove index (Inventory inventory) =
+    if Dict.member index inventory then
+        Inventory (inventory |> Dict.update index (always (Just Nothing)))
+
+    else
+        Inventory inventory
+
+
+{-| Get item from slot at index
+-}
+get : Int -> Inventory a -> Maybe a
+get index (Inventory inventory) =
+    Dict.get index inventory
+        |> Maybe.andThen identity
+
+
+{-| Switch items at fromIndex and toIndex
+
+Returns unchanged inventory if either index does not exist
+
+-}
+switch : Int -> Int -> Inventory a -> Inventory a
+switch fromIndex toIndex (Inventory inventory) =
+    case ( Dict.get fromIndex inventory, Dict.get toIndex inventory ) of
+        ( Just from, Just to ) ->
+            Inventory (inventory |> Dict.insert fromIndex to |> Dict.insert toIndex from)
+
+        _ ->
             Inventory inventory
 
 
