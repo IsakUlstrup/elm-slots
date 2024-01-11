@@ -68,12 +68,22 @@ viewSlot selection ( index, slot ) =
             selection
                 |> Maybe.map ((==) index)
                 |> Maybe.withDefault False
+
+        isEmpty : Bool
+        isEmpty =
+            case slot of
+                Nothing ->
+                    True
+
+                Just _ ->
+                    False
     in
     Html.button
         [ Html.Events.onClick (ClickedSlot index)
         , Html.Attributes.classList
             [ ( "slot", True )
             , ( "selected", isSelected )
+            , ( "empty", isEmpty )
             ]
         ]
         [ -- Html.p [] [ Html.text (String.fromInt index) ]

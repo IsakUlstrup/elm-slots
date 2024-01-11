@@ -9,22 +9,28 @@ $spacing-large: 2rem
     margin: 0
     box-sizing: border-box
 
-#app
+body
     background: #262626
+
+#app
     color: beige
     font-family: Arial, Helvetica, sans-serif
     width: 100%
     height: 100vh
     padding: $spacing-large
+    display: flex
+    flex-direction: column
+    align-items: center
+    justify-content: center
 
 .inventory
     display: flex
-    gap: $spacing-small
+    gap: $spacing-medium
 
 .slot
-    background-color: #04AA6D
+    background-color: #e25589
     border: 0.2rem solid beige
-    border-radius: 0.5rem
+    border-radius: 9999rem
     color: beige
     padding: $spacing-medium $spacing-large
     width: 7rem
@@ -33,6 +39,12 @@ $spacing-large: 2rem
     text-decoration: none
     display: inline-block
     font-size: 1rem
+    transition: transform 300ms, background-color 300ms
+    box-shadow: 0.2rem 0.2rem 1rem rgba(0, 0, 0, 0.4)
+
+    &.empty
+        background-color: rgb(125, 70, 100)
 
     &.selected
         border-color: lightblue
+        transform: scale(1.1)
