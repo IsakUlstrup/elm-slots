@@ -34,13 +34,13 @@ init _ =
 
 
 type Msg
-    = ClickedSlot Int (Slot Int)
+    = ClickedSlot Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ClickedSlot clickedIndex _ ->
+        ClickedSlot clickedIndex ->
             case model.selection of
                 Just selectedIndex ->
                     ( { model
@@ -70,7 +70,7 @@ viewSlot selection ( index, slot ) =
                 |> Maybe.withDefault False
     in
     Html.button
-        [ Html.Events.onClick (ClickedSlot index slot)
+        [ Html.Events.onClick (ClickedSlot index)
         , Html.Attributes.classList
             [ ( "slot", True )
             , ( "selected", isSelected )
