@@ -56,15 +56,20 @@ update msg model =
     case msg of
         ClickedSlot ( locationIndex, clickedIndex ) slot ->
             case model.selection of
-                Just ( _, selectedIndex ) ->
-                    ( { model
-                        | inventory =
-                            model.inventory
-                                |> Inventory.switch selectedIndex clickedIndex
-                        , selection = Nothing
-                      }
-                    , Cmd.none
-                    )
+                Just ( selectedLocation, selectedIndex ) ->
+                    if locationIndex == selectedLocation then
+                        ( { model
+                            | inventory =
+                                model.inventory
+                                    |> Inventory.switch selectedIndex clickedIndex
+                            , selection = Nothing
+                          }
+                        , Cmd.none
+                        )
+
+                    else
+                        -- handle inter-inventory switch
+                        ( { model | selection = Nothing }, Cmd.none )
 
                 Nothing ->
                     case slot of
