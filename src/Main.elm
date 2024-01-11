@@ -2,6 +2,7 @@ module Main exposing (Model, Msg, main)
 
 import Browser
 import Html exposing (Html, button, h3, main_, p, text)
+import Html.Attributes
 import Html.Events exposing (onClick)
 
 
@@ -47,7 +48,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    main_ []
+    main_ [ Html.Attributes.id "app" ]
         [ h3 [] [ text "Elm counter" ]
         , p [] [ text <| String.fromInt model ]
         , button [ onClick Increment ] [ text "+" ]
@@ -77,4 +78,3 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
