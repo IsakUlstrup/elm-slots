@@ -1,4 +1,4 @@
-module Inventory exposing (Inventory, Slot, new, toList)
+module Inventory exposing (Inventory, Slot, insert, new, toList)
 
 import Dict exposing (Dict)
 
@@ -29,6 +29,27 @@ new size =
         |> List.map (\i -> ( i, Nothing ))
         |> Dict.fromList
         |> Inventory
+
+
+{-| Insert item into slot at index, returns unchanged inventory if index is out of range or occupied
+-}
+insert : Int -> a -> Inventory a -> Inventory a
+insert index item (Inventory inventory) =
+    case Dict.get index inventory of
+        Just (Just _) ->
+            -- slot is occupied, return unchanged
+            Inventory inventory
+
+        Just Nothing ->
+            -- slot exists and is empty, insert
+            Inventory
+                (inventory
+                    |> Dict.update index (always (Just (Just item)))
+                )
+
+        Nothing ->
+            -- slot does not exist, return unchanged
+            Inventory inventory
 
 
 {-| Get Inventory slots as a List of Int Slot Tuples

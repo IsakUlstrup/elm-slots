@@ -19,7 +19,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model (Inventory.new 4) Nothing, Cmd.none )
+    ( Model (Inventory.new 4 |> Inventory.insert 0 10) Nothing, Cmd.none )
 
 
 
