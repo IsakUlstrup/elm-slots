@@ -12,7 +12,7 @@ import Inventory exposing (Inventory, Slot)
 
 
 type alias Model =
-    { inventory : Inventory
+    { inventory : Inventory Int
     , selection : Maybe Int
     }
 
@@ -27,7 +27,7 @@ init _ =
 
 
 type Msg
-    = ClickedSlot Int Slot
+    = ClickedSlot Int (Slot Int)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -44,7 +44,7 @@ update msg model =
 -- VIEW
 
 
-viewSlot : Maybe Int -> ( Int, Slot ) -> Html Msg
+viewSlot : Maybe Int -> ( Int, Slot Int ) -> Html Msg
 viewSlot selection ( index, slot ) =
     let
         isSelected : Bool

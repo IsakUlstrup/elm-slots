@@ -5,14 +5,14 @@ import Dict exposing (Dict)
 
 {-| Slot type, represents value at each inventory slot
 -}
-type alias Slot =
-    Maybe Int
+type alias Slot a =
+    Maybe a
 
 
 {-| Main Inventory type. It's an opaque dict with Int keys and Slot values
 -}
-type Inventory
-    = Inventory (Dict Int Slot)
+type Inventory a
+    = Inventory (Dict Int (Slot a))
 
 
 {-|
@@ -20,7 +20,7 @@ type Inventory
     Create new empty inventory of given size
 
 -}
-new : Int -> Inventory
+new : Int -> Inventory a
 new size =
     size
         |> clamp 0 100
@@ -33,6 +33,6 @@ new size =
 
 {-| Get Inventory slots as a List of Int Slot Tuples
 -}
-toList : Inventory -> List ( Int, Slot )
+toList : Inventory a -> List ( Int, Slot a )
 toList (Inventory inventory) =
     Dict.toList inventory
