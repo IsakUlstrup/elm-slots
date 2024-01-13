@@ -4,6 +4,11 @@ $spacing-small: 0.5rem
 $spacing-medium: 1rem
 $spacing-large: 2rem
 
+$grey-color: #262626
+$beige-color: beige
+$lavender-color: #be597e
+$mint-color: rgb(139, 206, 178)
+
 *
     padding: 0
     margin: 0
@@ -38,7 +43,7 @@ body
     justify-content: space-evenly
     gap: 5rem
     text-align: center
-    background-color: rgb(134, 184, 176)
+    background-color: rgb(139, 206, 178)
     padding: $spacing-medium
     border-radius: 1rem
     scroll-snap-align: center
@@ -63,6 +68,7 @@ body
     font-size: 1rem
     transition: transform 300ms, background-color 300ms
     box-shadow: 0.2rem 0.2rem 1rem rgba(0, 0, 0, 0.4)
+    cursor: pointer
 
     &.empty
         background-color: rgb(125, 70, 100)
@@ -70,3 +76,6 @@ body
     &.selected
         border-color: lightblue
         transform: scale(1.1)
+
+    &:active
+        transform: scale(0.9)
