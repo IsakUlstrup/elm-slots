@@ -11,13 +11,37 @@ import Location exposing (Location)
 
 switchSlots : ( Int, Int ) -> ( Int, Int ) -> Dict Int (Location Int) -> Dict Int (Location Int)
 switchSlots ( fromLocation, fromSlot ) ( toLocation, toSlot ) locations =
-    if fromLocation == toLocation then
-        locations
-            |> Dict.update fromLocation (\ml -> Maybe.map (\l -> { l | inventory = Inventory.switch fromSlot toSlot l.inventory }) ml)
+    let
+        getSlot loc slot =
+            Dict.get loc locations
+                |> Maybe.map (.inventory >> Inventory.get slot)
 
-    else
-        -- handle inter-inventory switch
-        locations
+        maybeToSlot : Maybe a -> Slot a
+        maybeToSlot m =
+            case m of
+                Just a ->
+                    Item a
+
+                Nothing ->
+                    Empty
+
+        removeInsert : Int -> Maybe a -> Location a -> Location a
+        removeInsert f t l =
+            { l
+                | inventory =
+                    l.inventory
+                        |> Inventory.remove f
+                        |> Inventory.insert f (maybeToSlot t)
+            }
+    in
+    case ( getSlot fromLocation fromSlot, getSlot toLocation toSlot ) of
+        ( Just from, Just to ) ->
+            locations
+                |> Dict.update fromLocation (Maybe.map (removeInsert fromSlot to))
+                |> Dict.update toLocation (Maybe.map (removeInsert toSlot from))
+
+        _ ->
+            locations
 
 
 
@@ -34,7 +58,7 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
         (Dict.fromList
-            [ ( 0, Location "Forest" (Inventory.new 3 |> Inventory.insert 0 10) )
+            [ ( 0, Location "Forest" (Inventory.new 3 |> Inventory.insert 0 (Item 10)) )
             , ( 1, Location "Forest 2" (Inventory.new 3) )
             , ( 2, Location "Forest 3" (Inventory.new 3) )
             ]

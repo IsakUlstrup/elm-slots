@@ -43,7 +43,7 @@ new size =
 
 {-| Insert item into slot at index, returns unchanged inventory if index is out of range or occupied
 -}
-insert : Int -> a -> Inventory a -> Inventory a
+insert : Int -> Slot a -> Inventory a -> Inventory a
 insert index item (Inventory inventory) =
     case Dict.get index inventory of
         Just (Item _) ->
@@ -54,7 +54,7 @@ insert index item (Inventory inventory) =
             -- slot exists and is empty, insert
             Inventory
                 (inventory
-                    |> Dict.update index (always (Just (Item item)))
+                    |> Dict.update index (always (Just item))
                 )
 
         Nothing ->
