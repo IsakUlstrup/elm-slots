@@ -60,7 +60,7 @@ init _ =
         (Dict.fromList
             [ ( 0, Location "Forest" (Inventory.new 3 |> Inventory.insert 0 (Item 10)) )
             , ( 1, Location "Forest 2" (Inventory.new 3) )
-            , ( 2, Location "Forest 3" (Inventory.new 3) )
+            , ( 2, Location "Forest 3" (Inventory.new 3 |> Inventory.insert 0 (Item 3)) )
             ]
         )
         Nothing
