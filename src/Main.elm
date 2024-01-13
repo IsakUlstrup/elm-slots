@@ -9,6 +9,17 @@ import Inventory exposing (Inventory, Slot(..))
 import Location exposing (Location)
 
 
+switchSlots : ( Int, Int ) -> ( Int, Int ) -> Dict Int (Location Int) -> Dict Int (Location Int)
+switchSlots ( fromLocation, fromSlot ) ( toLocation, toSlot ) locations =
+    if fromLocation == toLocation then
+        locations
+            |> Dict.update fromLocation (\ml -> Maybe.map (\l -> { l | inventory = Inventory.switch fromSlot toSlot l.inventory }) ml)
+
+    else
+        -- handle inter-inventory switch
+        locations
+
+
 
 -- MODEL
 
@@ -44,22 +55,17 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        ClickedSlot ( locationIndex, clickedIndex ) slot ->
+        ClickedSlot clickedLocation slot ->
             case model.selection of
-                Just ( selectedLocation, selectedIndex ) ->
-                    if locationIndex == selectedLocation then
-                        ( { model
-                            | locations =
-                                model.locations
-                                    |> Dict.update locationIndex (\ml -> Maybe.map (\l -> { l | inventory = Inventory.switch clickedIndex selectedIndex l.inventory }) ml)
-                            , selection = Nothing
-                          }
-                        , Cmd.none
-                        )
-
-                    else
-                        -- handle inter-inventory switch
-                        ( { model | selection = Nothing }, Cmd.none )
+                Just selectedLocation ->
+                    ( { model
+                        | locations =
+                            model.locations
+                                |> switchSlots selectedLocation clickedLocation
+                        , selection = Nothing
+                      }
+                    , Cmd.none
+                    )
 
                 Nothing ->
                     case slot of
@@ -67,7 +73,7 @@ update msg model =
                             ( model, Cmd.none )
 
                         Item _ ->
-                            ( { model | selection = Just ( locationIndex, clickedIndex ) }, Cmd.none )
+                            ( { model | selection = Just clickedLocation }, Cmd.none )
 
 
 
