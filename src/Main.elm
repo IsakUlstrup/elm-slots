@@ -1,6 +1,7 @@
 module Main exposing (Model, Msg, main)
 
 import Browser
+import Dict exposing (Dict)
 import Html exposing (Html, main_)
 import Html.Attributes
 import Html.Events
@@ -13,7 +14,7 @@ import Location exposing (Location)
 
 
 type alias Model =
-    { locations : List (Location Int)
+    { locations : Dict Int (Location Int)
     , selection : Maybe ( Int, Int )
     }
 
@@ -21,18 +22,12 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
-        [ Location "Forest" (Inventory.new 3)
-        , Location "Forest 2" (Inventory.new 3)
-        , Location "Forest 3" (Inventory.new 3)
-        , Location "Forest 4" (Inventory.new 3)
-        , Location "Forest 5" (Inventory.new 3)
-        , Location "Forest 6" (Inventory.new 3)
-        , Location "Forest 2" (Inventory.new 3)
-        , Location "Forest 3" (Inventory.new 3)
-        , Location "Forest 4" (Inventory.new 3)
-        , Location "Forest 5" (Inventory.new 3)
-        , Location "Forest 6" (Inventory.new 3)
-        ]
+        (Dict.fromList
+            [ ( 0, Location "Forest" (Inventory.new 3 |> Inventory.insert 0 10) )
+            , ( 1, Location "Forest 2" (Inventory.new 3) )
+            , ( 2, Location "Forest 3" (Inventory.new 3) )
+            ]
+        )
         Nothing
     , Cmd.none
     )
@@ -53,13 +48,12 @@ update msg model =
             case model.selection of
                 Just ( selectedLocation, selectedIndex ) ->
                     if locationIndex == selectedLocation then
-                        ( --     { model
-                          --     | inventory =
-                          --         model.inventory
-                          --             |> Inventory.switch selectedIndex clickedIndex
-                          --     , selection = Nothing
-                          --   }
-                          model
+                        ( { model
+                            | locations =
+                                model.locations
+                                    |> Dict.update locationIndex (\ml -> Maybe.map (\l -> { l | inventory = Inventory.switch clickedIndex selectedIndex l.inventory }) ml)
+                            , selection = Nothing
+                          }
                         , Cmd.none
                         )
 
@@ -80,8 +74,8 @@ update msg model =
 -- VIEW
 
 
-viewLocation : Maybe ( Int, Int ) -> Int -> Location Int -> Html Msg
-viewLocation selection index location =
+viewLocation : Maybe ( Int, Int ) -> ( Int, Location Int ) -> Html Msg
+viewLocation selection ( index, location ) =
     Html.div [ Html.Attributes.class "location" ]
         [ Html.h1 [] [ Html.text location.name ]
         , viewInventory selection index location.inventory
@@ -143,7 +137,11 @@ viewInventory selection index inventory =
 view : Model -> Html Msg
 view model =
     main_ [ Html.Attributes.id "app" ]
-        [ Html.div [ Html.Attributes.class "locations" ] (List.indexedMap (viewLocation model.selection) model.locations)
+        [ Html.div [ Html.Attributes.class "locations" ]
+            (model.locations
+                |> Dict.toList
+                |> List.map (viewLocation model.selection)
+            )
         ]
 
 
