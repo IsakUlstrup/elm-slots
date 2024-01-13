@@ -14,7 +14,6 @@ import Location exposing (Location)
 
 type alias Model =
     { locations : List (Location Int)
-    , inventory : Inventory Int
     , selection : Maybe ( Int, Int )
     }
 
@@ -34,10 +33,6 @@ init _ =
         , Location "Forest 5" (Inventory.new 3)
         , Location "Forest 6" (Inventory.new 3)
         ]
-        (Inventory.new 4
-            |> Inventory.insert 0 10
-            |> Inventory.insert 2 20
-        )
         Nothing
     , Cmd.none
     )
@@ -58,12 +53,13 @@ update msg model =
             case model.selection of
                 Just ( selectedLocation, selectedIndex ) ->
                     if locationIndex == selectedLocation then
-                        ( { model
-                            | inventory =
-                                model.inventory
-                                    |> Inventory.switch selectedIndex clickedIndex
-                            , selection = Nothing
-                          }
+                        ( --     { model
+                          --     | inventory =
+                          --         model.inventory
+                          --             |> Inventory.switch selectedIndex clickedIndex
+                          --     , selection = Nothing
+                          --   }
+                          model
                         , Cmd.none
                         )
 
@@ -87,7 +83,7 @@ update msg model =
 viewLocation : Maybe ( Int, Int ) -> Int -> Location Int -> Html Msg
 viewLocation selection index location =
     Html.div [ Html.Attributes.class "location" ]
-        [ Html.h3 [] [ Html.text location.name ]
+        [ Html.h1 [] [ Html.text location.name ]
         , viewInventory selection index location.inventory
         ]
 
@@ -148,7 +144,6 @@ view : Model -> Html Msg
 view model =
     main_ [ Html.Attributes.id "app" ]
         [ Html.div [ Html.Attributes.class "locations" ] (List.indexedMap (viewLocation model.selection) model.locations)
-        , viewInventory model.selection -1 model.inventory
         ]
 
 
