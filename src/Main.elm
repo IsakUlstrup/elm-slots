@@ -58,7 +58,8 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
         (Dict.fromList
-            [ ( 0, Location "Forest" (Inventory.new 3 |> Inventory.insert 0 (Item 10)) )
+            [ ( -1, Location "Home" (Inventory.new 9 |> Inventory.insert 0 (Item 5)) )
+            , ( 0, Location "Forest" (Inventory.new 3 |> Inventory.insert 0 (Item 10)) )
             , ( 1, Location "Forest 2" (Inventory.new 3) )
             , ( 2, Location "Forest 3" (Inventory.new 3 |> Inventory.insert 0 (Item 3)) )
             ]
@@ -169,8 +170,17 @@ view model =
     main_ [ Html.Attributes.id "app" ]
         [ Html.div [ Html.Attributes.class "locations" ]
             (model.locations
+                |> Dict.filter (\index _ -> index >= 0)
                 |> Dict.toList
                 |> List.map (viewLocation model.selection)
+            )
+        , Html.div []
+            (case Dict.get -1 model.locations of
+                Just l ->
+                    [ viewLocation model.selection ( -1, l ) ]
+
+                Nothing ->
+                    []
             )
         ]
 
