@@ -1,6 +1,6 @@
 module Inventory exposing
     ( Inventory
-    , Slot
+    , Slot(..)
     , get
     , insert
     , new
@@ -14,8 +14,9 @@ import Dict exposing (Dict)
 
 {-| Slot type, represents value at each inventory slot
 -}
-type alias Slot a =
-    Maybe a
+type Slot a
+    = Item a
+    | Empty
 
 
 {-| Main Inventory type. It's an opaque dict with Int keys and Slot values
@@ -35,7 +36,7 @@ new size =
         |> clamp 0 100
         |> (\i -> i - 1)
         |> List.range 0
-        |> List.map (\i -> ( i, Nothing ))
+        |> List.map (\i -> ( i, Empty ))
         |> Dict.fromList
         |> Inventory
 
@@ -45,15 +46,15 @@ new size =
 insert : Int -> a -> Inventory a -> Inventory a
 insert index item (Inventory inventory) =
     case Dict.get index inventory of
-        Just (Just _) ->
+        Just (Item _) ->
             -- slot is occupied, return unchanged
             Inventory inventory
 
-        Just Nothing ->
+        Just Empty ->
             -- slot exists and is empty, insert
             Inventory
                 (inventory
-                    |> Dict.update index (always (Just (Just item)))
+                    |> Dict.update index (always (Just (Item item)))
                 )
 
         Nothing ->
@@ -66,7 +67,7 @@ insert index item (Inventory inventory) =
 remove : Int -> Inventory a -> Inventory a
 remove index (Inventory inventory) =
     if Dict.member index inventory then
-        Inventory (inventory |> Dict.update index (always (Just Nothing)))
+        Inventory (inventory |> Dict.update index (always (Just Empty)))
 
     else
         Inventory inventory
@@ -77,7 +78,14 @@ remove index (Inventory inventory) =
 get : Int -> Inventory a -> Maybe a
 get index (Inventory inventory) =
     Dict.get index inventory
-        |> Maybe.andThen identity
+        |> (\mi ->
+                case mi of
+                    Just (Item item) ->
+                        Just item
+
+                    _ ->
+                        Nothing
+           )
 
 
 {-| Switch items at fromIndex and toIndex

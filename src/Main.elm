@@ -4,7 +4,7 @@ import Browser
 import Html exposing (Html, main_)
 import Html.Attributes
 import Html.Events
-import Inventory exposing (Inventory, Slot)
+import Inventory exposing (Inventory, Slot(..))
 import Location exposing (Location)
 
 
@@ -69,10 +69,10 @@ update msg model =
 
                 Nothing ->
                     case slot of
-                        Nothing ->
+                        Empty ->
                             ( model, Cmd.none )
 
-                        Just _ ->
+                        Item _ ->
                             ( { model | selection = Just ( locationIndex, clickedIndex ) }, Cmd.none )
 
 
@@ -103,10 +103,10 @@ viewSlot locationIndex selection ( index, slot ) =
         isEmpty : Bool
         isEmpty =
             case slot of
-                Nothing ->
+                Empty ->
                     True
 
-                Just _ ->
+                Item _ ->
                     False
     in
     Html.button
@@ -120,10 +120,10 @@ viewSlot locationIndex selection ( index, slot ) =
         [ -- Html.p [] [ Html.text (String.fromInt index) ]
           Html.p []
             [ case slot of
-                Just item ->
+                Item item ->
                     Html.text (String.fromInt item)
 
-                Nothing ->
+                Empty ->
                     Html.text ""
             ]
         ]

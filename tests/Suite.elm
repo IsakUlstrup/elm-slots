@@ -2,7 +2,7 @@ module Suite exposing (inventory)
 
 import Expect
 import Fuzz exposing (int)
-import Inventory
+import Inventory exposing (Slot(..))
 import Test exposing (Test, describe, fuzz, test)
 
 
@@ -30,9 +30,9 @@ inventory =
                     |> Inventory.insert 1 0
                     |> Inventory.toList
                     |> Expect.equalLists
-                        [ ( 0, Nothing )
-                        , ( 1, Just 0 )
-                        , ( 2, Nothing )
+                        [ ( 0, Empty )
+                        , ( 1, Item 0 )
+                        , ( 2, Empty )
                         ]
         , test "Insert item into out of range slot" <|
             \_ ->
@@ -40,9 +40,9 @@ inventory =
                     |> Inventory.insert 10 0
                     |> Inventory.toList
                     |> Expect.equalLists
-                        [ ( 0, Nothing )
-                        , ( 1, Nothing )
-                        , ( 2, Nothing )
+                        [ ( 0, Empty )
+                        , ( 1, Empty )
+                        , ( 2, Empty )
                         ]
         , test "Insert item into occupied slot, should not change" <|
             \_ ->
@@ -51,9 +51,9 @@ inventory =
                     |> Inventory.insert 0 10
                     |> Inventory.toList
                     |> Expect.equalLists
-                        [ ( 0, Just 0 )
-                        , ( 1, Nothing )
-                        , ( 2, Nothing )
+                        [ ( 0, Item 0 )
+                        , ( 1, Empty )
+                        , ( 2, Empty )
                         ]
         , test "Remove item from valid, occupied slot" <|
             \_ ->
@@ -62,9 +62,9 @@ inventory =
                     |> Inventory.remove 1
                     |> Inventory.toList
                     |> Expect.equalLists
-                        [ ( 0, Nothing )
-                        , ( 1, Nothing )
-                        , ( 2, Nothing )
+                        [ ( 0, Empty )
+                        , ( 1, Empty )
+                        , ( 2, Empty )
                         ]
         , test "Remove item from out of range slot" <|
             \_ ->
@@ -73,9 +73,9 @@ inventory =
                     |> Inventory.remove 20
                     |> Inventory.toList
                     |> Expect.equalLists
-                        [ ( 0, Just 2 )
-                        , ( 1, Nothing )
-                        , ( 2, Nothing )
+                        [ ( 0, Item 2 )
+                        , ( 1, Empty )
+                        , ( 2, Empty )
                         ]
         , test "Get item from occupied slot in range" <|
             \_ ->
@@ -100,9 +100,9 @@ inventory =
                     |> Inventory.switch 0 2
                     |> Inventory.toList
                     |> Expect.equalLists
-                        [ ( 0, Nothing )
-                        , ( 1, Nothing )
-                        , ( 2, Just 1 )
+                        [ ( 0, Empty )
+                        , ( 1, Empty )
+                        , ( 2, Item 1 )
                         ]
         , test "Switch items, both slots are occupied" <|
             \_ ->
@@ -112,9 +112,9 @@ inventory =
                     |> Inventory.switch 0 2
                     |> Inventory.toList
                     |> Expect.equalLists
-                        [ ( 0, Just 2 )
-                        , ( 1, Nothing )
-                        , ( 2, Just 1 )
+                        [ ( 0, Item 2 )
+                        , ( 1, Empty )
+                        , ( 2, Item 1 )
                         ]
         , test "Switch items, same index" <|
             \_ ->
@@ -124,8 +124,8 @@ inventory =
                     |> Inventory.switch 0 0
                     |> Inventory.toList
                     |> Expect.equalLists
-                        [ ( 0, Just 1 )
-                        , ( 1, Nothing )
-                        , ( 2, Just 2 )
+                        [ ( 0, Item 1 )
+                        , ( 1, Empty )
+                        , ( 2, Item 2 )
                         ]
         ]
