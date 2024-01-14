@@ -58,8 +58,8 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
         (Dict.fromList
-            [ ( -1, Location "Home" (Inventory.new 9 |> Inventory.insert 0 (Item 5)) )
-            , ( 0, Location "Forest" (Inventory.new 3 |> Inventory.insert 0 (Item 10)) )
+            [ ( -1, Location "Home" (Inventory.new 6 |> Inventory.insert 0 (Item 5)) )
+            , ( 0, Location "Forest 1" (Inventory.new 3 |> Inventory.insert 0 (Item 10)) )
             , ( 1, Location "Forest 2" (Inventory.new 3) )
             , ( 2, Location "Forest 3" (Inventory.new 3 |> Inventory.insert 0 (Item 3)) )
             ]
@@ -108,7 +108,7 @@ update msg model =
 viewLocation : Maybe ( Int, Int ) -> ( Int, Location Int ) -> Html Msg
 viewLocation selection ( index, location ) =
     Html.div [ Html.Attributes.class "location" ]
-        [ Html.h1 [] [ Html.text location.name ]
+        [ Html.h1 [ Html.Attributes.class "location-name" ] [ Html.text location.name ]
         , viewInventory selection index location.inventory
         ]
 
@@ -174,7 +174,7 @@ view model =
                 |> Dict.toList
                 |> List.map (viewLocation model.selection)
             )
-        , Html.div []
+        , Html.div [ Html.Attributes.class "backpack" ]
             (case Dict.get -1 model.locations of
                 Just l ->
                     [ viewLocation model.selection ( -1, l ) ]

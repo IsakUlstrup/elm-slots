@@ -25,7 +25,7 @@ body
     display: flex
     flex-direction: column
     align-items: center
-    justify-content: space-evenly
+    justify-content: flex-end
 
 .locations
     width: 100%
@@ -34,7 +34,13 @@ body
     gap: $spacing-large
     overflow-x: auto
     scroll-snap-type: x mandatory
-    justify-content: space-around
+    // justify-content: space-around
+
+.locations .location
+    background-color: rgb(139, 206, 178)
+
+.backpack .location .location-name
+    display: none
 
 .location
     flex: 0 0 20rem
@@ -44,7 +50,6 @@ body
     justify-content: space-evenly
     gap: $spacing-large
     text-align: center
-    background-color: rgb(139, 206, 178)
     padding: $spacing-medium
     border-radius: 1rem
     scroll-snap-align: center
