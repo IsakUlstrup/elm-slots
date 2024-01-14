@@ -59,10 +59,18 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
         (Dict.fromList
-            [ ( -1, Location "Home" Location.None (Inventory.new 6 |> Inventory.insert 0 (Item 1)) )
-            , ( 0, Location "Forest 1" (Location.Forest ( 0, 5000 ) 0) (Inventory.new 3 |> Inventory.insert 0 (Item 2)) )
+            [ ( -1
+              , Location "Home"
+                    Location.None
+                    (Inventory.new 6
+                        |> Inventory.insert 0 (Item 1)
+                        |> Inventory.insert 1 (Item 2)
+                        |> Inventory.insert 2 (Item 3)
+                    )
+              )
+            , ( 0, Location "Forest 1" (Location.Forest ( 0, 5000 ) 0) (Inventory.new 3) )
             , ( 1, Location "Forest 2" (Location.Forest ( 0, 5000 ) 0) (Inventory.new 3) )
-            , ( 2, Location "Forest 3" (Location.Forest ( 0, 5000 ) 0) (Inventory.new 3 |> Inventory.insert 0 (Item 3)) )
+            , ( 2, Location "Forest 3" (Location.Forest ( 0, 5000 ) 0) (Inventory.new 3) )
             ]
         )
         Nothing
