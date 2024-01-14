@@ -1,6 +1,7 @@
 module Main exposing (Model, Msg, main)
 
 import Browser
+import Browser.Events
 import Dict exposing (Dict)
 import Html exposing (Html, main_)
 import Html.Attributes
@@ -9,7 +10,7 @@ import Inventory exposing (Inventory, Slot(..))
 import Location exposing (Location)
 
 
-switchSlots : ( Int, Int ) -> ( Int, Int ) -> Dict Int (Location Int) -> Dict Int (Location Int)
+switchSlots : ( Int, Int ) -> ( Int, Int ) -> Dict Int Location -> Dict Int Location
 switchSlots ( fromLocation, fromSlot ) ( toLocation, toSlot ) locations =
     let
         getSlot loc slot =
@@ -25,7 +26,7 @@ switchSlots ( fromLocation, fromSlot ) ( toLocation, toSlot ) locations =
                 Nothing ->
                     Empty
 
-        removeInsert : Int -> Maybe a -> Location a -> Location a
+        removeInsert : Int -> Maybe Int -> Location -> Location
         removeInsert f t l =
             { l
                 | inventory =
@@ -49,7 +50,7 @@ switchSlots ( fromLocation, fromSlot ) ( toLocation, toSlot ) locations =
 
 
 type alias Model =
-    { locations : Dict Int (Location Int)
+    { locations : Dict Int Location
     , selection : Maybe ( Int, Int )
     }
 
@@ -58,10 +59,10 @@ init : () -> ( Model, Cmd Msg )
 init _ =
     ( Model
         (Dict.fromList
-            [ ( -1, Location "Home" (Inventory.new 6 |> Inventory.insert 0 (Item 5)) )
-            , ( 0, Location "Forest 1" (Inventory.new 3 |> Inventory.insert 0 (Item 10)) )
-            , ( 1, Location "Forest 2" (Inventory.new 3) )
-            , ( 2, Location "Forest 3" (Inventory.new 3 |> Inventory.insert 0 (Item 3)) )
+            [ ( -1, Location "Home" Location.None (Inventory.new 6 |> Inventory.insert 0 (Item 1)) )
+            , ( 0, Location "Forest 1" (Location.Forest ( 0, 5000 ) 0) (Inventory.new 3 |> Inventory.insert 0 (Item 2)) )
+            , ( 1, Location "Forest 2" (Location.Forest ( 0, 5000 ) 0) (Inventory.new 3) )
+            , ( 2, Location "Forest 3" (Location.Forest ( 0, 5000 ) 0) (Inventory.new 3 |> Inventory.insert 0 (Item 3)) )
             ]
         )
         Nothing
@@ -74,12 +75,22 @@ init _ =
 
 
 type Msg
-    = ClickedSlot ( Int, Int ) (Slot Int)
+    = Tick Float
+    | ClickedSlot ( Int, Int ) (Slot Int)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        Tick dt ->
+            ( { model
+                | locations =
+                    model.locations
+                        |> Dict.map (\_ location -> Location.tick dt location)
+              }
+            , Cmd.none
+            )
+
         ClickedSlot clickedLocation slot ->
             case model.selection of
                 Just selectedLocation ->
@@ -95,20 +106,42 @@ update msg model =
                 Nothing ->
                     case slot of
                         Empty ->
-                            ( model, Cmd.none )
+                            ( model
+                            , Cmd.none
+                            )
 
                         Item _ ->
-                            ( { model | selection = Just clickedLocation }, Cmd.none )
+                            ( { model | selection = Just clickedLocation }
+                            , Cmd.none
+                            )
 
 
 
 -- VIEW
 
 
-viewLocation : Maybe ( Int, Int ) -> ( Int, Location Int ) -> Html Msg
+viewLocation : Maybe ( Int, Int ) -> ( Int, Location ) -> Html Msg
 viewLocation selection ( index, location ) =
+    let
+        viewState =
+            Html.div [ Html.Attributes.class "location-state" ]
+                (case location.state of
+                    Location.None ->
+                        []
+
+                    Location.Forest ( cd, maxCd ) trees ->
+                        [ Html.p [] [ Html.text ("Trees: " ++ String.fromInt trees) ]
+                        , Html.progress
+                            [ Html.Attributes.value (String.fromFloat cd)
+                            , Html.Attributes.max (String.fromFloat maxCd)
+                            ]
+                            []
+                        ]
+                )
+    in
     Html.div [ Html.Attributes.class "location" ]
         [ Html.h1 [ Html.Attributes.class "location-name" ] [ Html.text location.name ]
+        , viewState
         , viewInventory selection index location.inventory
         ]
 
@@ -191,7 +224,7 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Browser.Events.onAnimationFrameDelta Tick
 
 
 
