@@ -21,22 +21,7 @@ tick dt location =
         Forest ( cd, maxCd ) trees ->
             let
                 newCd =
-                    (cd + (dt * toFloat sumInv)) |> min maxCd
-
-                sumInv =
-                    location.inventory
-                        |> Inventory.toList
-                        |> List.map Tuple.second
-                        |> List.filterMap
-                            (\slot ->
-                                case slot of
-                                    Item i ->
-                                        Just i
-
-                                    Empty ->
-                                        Nothing
-                            )
-                        |> List.sum
+                    (cd + dt) |> min maxCd
             in
             if newCd >= maxCd then
                 { location | state = Forest ( 0, maxCd ) (trees + 1) }
