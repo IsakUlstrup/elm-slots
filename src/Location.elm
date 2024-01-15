@@ -9,8 +9,7 @@ type LocationState
 
 
 type alias Location =
-    { name : String
-    , state : LocationState
+    { state : LocationState
     , inventory : Inventory Int
     }
 

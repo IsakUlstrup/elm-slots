@@ -60,7 +60,7 @@ init _ =
     ( Model
         (Dict.fromList
             [ ( -1
-              , Location "Home"
+              , Location
                     Location.None
                     (Inventory.new 6
                         |> Inventory.insert 0 (Item 1)
@@ -68,9 +68,9 @@ init _ =
                         |> Inventory.insert 2 (Item 3)
                     )
               )
-            , ( 0, Location "Forest 1" (Location.Forest ( 0, 50000 ) 3) (Inventory.new 3) )
-            , ( 1, Location "Forest 2" (Location.Forest ( 0, 50000 ) 2) (Inventory.new 3) )
-            , ( 2, Location "Forest 3" (Location.Forest ( 0, 50000 ) 5) (Inventory.new 3) )
+            , ( 0, Location (Location.Forest ( 0, 50000 ) 3) (Inventory.new 3) )
+            , ( 1, Location (Location.Forest ( 0, 50000 ) 2) (Inventory.new 3) )
+            , ( 2, Location (Location.Forest ( 0, 50000 ) 5) (Inventory.new 3) )
             ]
         )
         Nothing
@@ -148,8 +148,7 @@ viewLocation selection ( index, location ) =
                 )
     in
     Html.div [ Html.Attributes.class "location" ]
-        [ Html.h1 [ Html.Attributes.class "location-name" ] [ Html.text location.name ]
-        , viewState
+        [ viewState
         , viewInventory selection index location.inventory
         ]
 
