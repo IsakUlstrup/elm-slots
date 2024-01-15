@@ -89,6 +89,8 @@ get index (Inventory inventory) =
            )
 
 
+{-| Check if any occupied slot passes provided predicate
+-}
 any : (a -> Bool) -> Inventory a -> Bool
 any pred (Inventory inventory) =
     Dict.toList inventory

@@ -148,7 +148,11 @@ viewLocation selection ( index, location ) =
                 )
     in
     Html.div [ Html.Attributes.class "location" ]
-        [ viewState
+        [ if Location.hasSkill Minion.Debug 10 location then
+            viewState
+
+          else
+            Html.p [] []
         , viewInventory selection index location.inventory
         ]
 

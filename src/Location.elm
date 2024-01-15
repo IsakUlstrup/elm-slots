@@ -1,7 +1,7 @@
-module Location exposing (Location, LocationState(..), tick)
+module Location exposing (Location, LocationState(..), hasSkill, tick)
 
 import Inventory exposing (Inventory, Slot(..))
-import Minion exposing (Minion)
+import Minion exposing (Minion, Skill)
 
 
 type LocationState
@@ -31,3 +31,8 @@ tick dt location =
 
         None ->
             location
+
+
+hasSkill : Skill -> Int -> Location -> Bool
+hasSkill skill level location =
+    Inventory.any (Minion.hasLevel skill level) location.inventory
