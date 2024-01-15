@@ -128,4 +128,12 @@ inventory =
                         , ( 1, Empty )
                         , ( 2, Item 2 )
                         ]
+        , test "Check if any slot contents are above 10" <|
+            \_ ->
+                Inventory.new 3
+                    |> Inventory.insert 0 (Item 1)
+                    |> Inventory.insert 1 (Item 20)
+                    |> Inventory.any (\i -> i > 10)
+                    |> Expect.equal
+                        True
         ]

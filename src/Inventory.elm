@@ -1,6 +1,7 @@
 module Inventory exposing
     ( Inventory
     , Slot(..)
+    , any
     , get
     , insert
     , new
@@ -86,6 +87,22 @@ get index (Inventory inventory) =
                     _ ->
                         Nothing
            )
+
+
+any : (a -> Bool) -> Inventory a -> Bool
+any pred (Inventory inventory) =
+    Dict.toList inventory
+        |> List.map Tuple.second
+        |> List.filterMap
+            (\slot ->
+                case slot of
+                    Item i ->
+                        Just i
+
+                    Empty ->
+                        Nothing
+            )
+        |> List.any pred
 
 
 {-| Switch items at fromIndex and toIndex
