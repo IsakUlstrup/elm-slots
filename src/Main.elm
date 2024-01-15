@@ -66,6 +66,7 @@ init _ =
                     Location.None
                     (Inventory.new 6
                         |> Inventory.insert 0 (Item Minions.debug)
+                        |> Inventory.insert 1 (Item Minions.builder)
                     )
               )
             , ( 0, Location (Location.Forest ( 0, 50000 ) 3) (Inventory.new 3) )

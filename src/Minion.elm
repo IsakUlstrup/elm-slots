@@ -5,6 +5,7 @@ import CustomDict exposing (Dict)
 
 type Skill
     = Debug
+    | Construction
 
 
 type alias Minion =
