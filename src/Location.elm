@@ -1,4 +1,4 @@
-module Location exposing (Location, LocationState(..), hasSkill, tick)
+module Location exposing (Location, LocationState(..), hasSkill, reset, tick)
 
 import Inventory exposing (Inventory, Slot(..))
 import Minion exposing (Minion, Skill)
@@ -31,6 +31,16 @@ tick dt location =
 
         None ->
             location
+
+
+reset : Location -> Location
+reset location =
+    case location.state of
+        None ->
+            location
+
+        Forest ( _, maxCd ) _ ->
+            { location | state = Forest ( 0, maxCd ) 0 }
 
 
 hasSkill : Skill -> Int -> Location -> Bool

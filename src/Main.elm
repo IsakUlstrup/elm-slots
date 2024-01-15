@@ -85,6 +85,7 @@ init _ =
 type Msg
     = Tick Float
     | ClickedSlot ( Int, Int ) (Slot Minion)
+    | ClickedResetLocation Int
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -123,6 +124,15 @@ update msg model =
                             , Cmd.none
                             )
 
+        ClickedResetLocation index ->
+            ( { model
+                | locations =
+                    model.locations
+                        |> Dict.update index (\l -> Maybe.map Location.reset l)
+              }
+            , Cmd.none
+            )
+
 
 
 -- VIEW
@@ -146,6 +156,29 @@ viewLocation selection ( index, location ) =
                             []
                         ]
                 )
+
+        viewActions =
+            Html.div [ Html.Attributes.class "actions" ]
+                (case selection of
+                    Just ( selectedLocation, selectedSlot ) ->
+                        if selectedLocation == index then
+                            case Inventory.get selectedSlot location.inventory of
+                                Just m ->
+                                    if Minion.hasLevel Minion.Debug 5 m then
+                                        [ Html.button [ Html.Events.onClick (ClickedResetLocation index) ] [ Html.text "Reset location" ] ]
+
+                                    else
+                                        []
+
+                                Nothing ->
+                                    []
+
+                        else
+                            []
+
+                    Nothing ->
+                        []
+                )
     in
     Html.div [ Html.Attributes.class "location" ]
         [ if Location.hasSkill Minion.Debug 10 location then
@@ -153,6 +186,7 @@ viewLocation selection ( index, location ) =
 
           else
             Html.p [] []
+        , viewActions
         , viewInventory selection index location.inventory
         ]
 
