@@ -2,12 +2,14 @@ module Main exposing (Model, Msg, main)
 
 import Browser
 import Browser.Events
+import Content.Minions as Minions
 import Dict exposing (Dict)
 import Html exposing (Html, main_)
 import Html.Attributes
 import Html.Events
 import Inventory exposing (Inventory, Slot(..))
 import Location exposing (Location)
+import Minion exposing (Minion)
 
 
 switchSlots : ( Int, Int ) -> ( Int, Int ) -> Dict Int Location -> Dict Int Location
@@ -26,7 +28,7 @@ switchSlots ( fromLocation, fromSlot ) ( toLocation, toSlot ) locations =
                 Nothing ->
                     Empty
 
-        removeInsert : Int -> Maybe Int -> Location -> Location
+        removeInsert : Int -> Maybe Minion -> Location -> Location
         removeInsert f t l =
             { l
                 | inventory =
@@ -63,9 +65,7 @@ init _ =
               , Location
                     Location.None
                     (Inventory.new 6
-                        |> Inventory.insert 0 (Item 1)
-                        |> Inventory.insert 1 (Item 2)
-                        |> Inventory.insert 2 (Item 3)
+                        |> Inventory.insert 0 (Item Minions.debug)
                     )
               )
             , ( 0, Location (Location.Forest ( 0, 50000 ) 3) (Inventory.new 3) )
@@ -84,7 +84,7 @@ init _ =
 
 type Msg
     = Tick Float
-    | ClickedSlot ( Int, Int ) (Slot Int)
+    | ClickedSlot ( Int, Int ) (Slot Minion)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -153,7 +153,7 @@ viewLocation selection ( index, location ) =
         ]
 
 
-viewSlot : Int -> Maybe ( Int, Int ) -> ( Int, Slot Int ) -> Html Msg
+viewSlot : Int -> Maybe ( Int, Int ) -> ( Int, Slot Minion ) -> Html Msg
 viewSlot locationIndex selection ( index, slot ) =
     let
         isSelected : Bool
@@ -186,7 +186,7 @@ viewSlot locationIndex selection ( index, slot ) =
           Html.p []
             [ case slot of
                 Item item ->
-                    Html.text (String.fromInt item)
+                    Html.text (String.fromChar item.icon)
 
                 Empty ->
                     Html.text ""
@@ -194,7 +194,7 @@ viewSlot locationIndex selection ( index, slot ) =
         ]
 
 
-viewInventory : Maybe ( Int, Int ) -> Int -> Inventory Int -> Html Msg
+viewInventory : Maybe ( Int, Int ) -> Int -> Inventory Minion -> Html Msg
 viewInventory selection index inventory =
     Html.div
         [ Html.Attributes.class "inventory"

@@ -1,6 +1,7 @@
 module Location exposing (Location, LocationState(..), tick)
 
 import Inventory exposing (Inventory, Slot(..))
+import Minion exposing (Minion)
 
 
 type LocationState
@@ -10,7 +11,7 @@ type LocationState
 
 type alias Location =
     { state : LocationState
-    , inventory : Inventory Int
+    , inventory : Inventory Minion
     }
 
 
