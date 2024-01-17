@@ -5,7 +5,8 @@ import Minion exposing (Minion)
 
 
 type LocationState
-    = Tree ( Float, Float )
+    = Sapling ( Float, Float )
+    | Tree ( Float, Float )
     | InspectMinion
     | None
 
@@ -19,8 +20,11 @@ type alias Location =
 tick : Float -> Location -> Location
 tick dt location =
     case location.state of
-        Tree ( cd, maxCd ) ->
-            { location | state = Tree ( (cd + dt) |> min maxCd, maxCd ) }
+        Sapling ( cd, maxCd ) ->
+            { location | state = Sapling ( (cd + dt) |> min maxCd, maxCd ) }
+
+        Tree _ ->
+            location
 
         InspectMinion ->
             location

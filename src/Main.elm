@@ -71,7 +71,7 @@ init _ =
               )
             , ( 0, Location Location.None (Inventory.new 3) )
             , ( 1, Location Location.InspectMinion (Inventory.new 3) )
-            , ( 2, Location (Location.Tree ( 0, 50000 )) (Inventory.new 3) )
+            , ( 2, Location (Location.Sapling ( 0, 50000 )) (Inventory.new 3) )
             ]
         )
         Nothing
@@ -159,16 +159,22 @@ viewLocation selection ( index, location ) =
                         , Html.ul [] (List.map (\minion -> Html.li [] [ Html.text (Minion.toString minion) ]) (Location.minions location))
                         ]
 
-                    Location.Tree ( cd, maxCd ) ->
-                        [ Html.h1 []
-                            [ Html.text
-                                (if cd == maxCd then
-                                    "🌲"
-
-                                 else
-                                    "🌱"
-                                )
+                    Location.Sapling ( cd, maxCd ) ->
+                        [ Html.h1 [] [ Html.text "🌱" ]
+                        , Html.progress
+                            [ Html.Attributes.value (String.fromFloat cd)
+                            , Html.Attributes.max (String.fromFloat maxCd)
                             ]
+                            []
+                        ]
+
+                    Location.Tree ( health, maxHealth ) ->
+                        [ Html.h1 [] [ Html.text "🌲" ]
+                        , Html.progress
+                            [ Html.Attributes.value (String.fromFloat health)
+                            , Html.Attributes.max (String.fromFloat maxHealth)
+                            ]
+                            []
                         ]
                 )
 
