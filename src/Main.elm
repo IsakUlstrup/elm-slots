@@ -141,7 +141,7 @@ update msg model =
 
 viewAction : SkillAction -> Html Msg
 viewAction action =
-    Html.div [] [ Html.text (Minion.actionString action) ]
+    Html.div [] [ Html.text (Minion.skillActionString action) ]
 
 
 viewLocation : Maybe ( Int, Int ) -> ( Int, Location ) -> Html Msg

@@ -1,14 +1,13 @@
 module Minion exposing
-    ( AutoAction
-    , ManualAction
+    ( Action
     , Minion
     , Skill(..)
     , SkillAction
-    , actionString
     , deriveLevel
     , getActions
     , grantExperience
     , new
+    , skillActionString
     , toString
     )
 
@@ -33,27 +32,29 @@ skillToString skill =
 
 
 type SkillAction
-    = Auto AutoAction
-    | Manual ManualAction
+    = Auto Action
+    | Manual Action
 
 
-actionString : SkillAction -> String
-actionString action =
+skillActionString : SkillAction -> String
+skillActionString action =
     case action of
         Auto autoAction ->
-            "Auto " ++ autoActionString autoAction
+            "Auto " ++ actionString autoAction
 
         Manual manualAction ->
-            "Manual " ++ manualActionString manualAction
+            "Manual " ++ actionString manualAction
 
 
-type AutoAction
+type Action
     = PlantTree
     | CutTree
+    | ConstructBuilding
+    | ResetLocation
 
 
-autoActionString : AutoAction -> String
-autoActionString action =
+actionString : Action -> String
+actionString action =
     case action of
         PlantTree ->
             "PlantTree"
@@ -61,15 +62,6 @@ autoActionString action =
         CutTree ->
             "CutTree"
 
-
-type ManualAction
-    = ConstructBuilding
-    | ResetLocation
-
-
-manualActionString : ManualAction -> String
-manualActionString action =
-    case action of
         ConstructBuilding ->
             "ConstructBuilding"
 
