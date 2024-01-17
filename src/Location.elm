@@ -1,11 +1,12 @@
-module Location exposing (Location, LocationState(..), hasSkill, reset, tick)
+module Location exposing (Location, LocationState(..), minions, reset, tick)
 
 import Inventory exposing (Inventory, Slot(..))
-import Minion exposing (Minion, Skill)
+import Minion exposing (Minion)
 
 
 type LocationState
     = Tree ( Float, Float )
+    | InspectMinion
     | None
 
 
@@ -21,20 +22,29 @@ tick dt location =
         Tree ( cd, maxCd ) ->
             { location | state = Tree ( (cd + dt) |> min maxCd, maxCd ) }
 
+        InspectMinion ->
+            location
+
         None ->
             location
+
+
+minions : Location -> List Minion
+minions location =
+    location.inventory
+        |> Inventory.toList
+        |> List.map Tuple.second
+        |> List.filterMap
+            (\slot ->
+                case slot of
+                    Item item ->
+                        Just item
+
+                    Empty ->
+                        Nothing
+            )
 
 
 reset : Location -> Location
 reset location =
-    case location.state of
-        None ->
-            location
-
-        Tree _ ->
-            { location | state = None }
-
-
-hasSkill : Skill -> Int -> Location -> Bool
-hasSkill skill level location =
-    Inventory.any (Minion.hasLevel skill level) location.inventory
+    { location | state = None }

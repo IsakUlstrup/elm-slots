@@ -66,11 +66,11 @@ init _ =
                     Location.None
                     (Inventory.new 6
                         |> Inventory.insert 0 (Item Minions.debug)
-                        |> Inventory.insert 1 (Item Minions.builder)
+                        |> Inventory.insert 1 (Item Minions.beaver)
                     )
               )
             , ( 0, Location Location.None (Inventory.new 3) )
-            , ( 1, Location Location.None (Inventory.new 3) )
+            , ( 1, Location Location.InspectMinion (Inventory.new 3) )
             , ( 2, Location (Location.Tree ( 0, 50000 )) (Inventory.new 3) )
             ]
         )
@@ -149,6 +149,11 @@ viewLocation selection ( index, location ) =
                     Location.None ->
                         []
 
+                    Location.InspectMinion ->
+                        [ Html.h1 [] [ Html.text "Inspect minions" ]
+                        , Html.ul [] (List.map (\minion -> Html.li [] [ Html.text (Minion.toString minion) ]) (Location.minions location))
+                        ]
+
                     Location.Tree ( cd, maxCd ) ->
                         [ Html.h1 []
                             [ Html.text
@@ -159,41 +164,11 @@ viewLocation selection ( index, location ) =
                                     "🌱"
                                 )
                             ]
-                        , Html.progress
-                            [ Html.Attributes.value (String.fromFloat cd)
-                            , Html.Attributes.max (String.fromFloat maxCd)
-                            ]
-                            []
                         ]
-                )
-
-        viewActions : Html Msg
-        viewActions =
-            Html.div [ Html.Attributes.class "actions" ]
-                (case selection of
-                    Just ( selectedLocation, selectedSlot ) ->
-                        if selectedLocation == index then
-                            case Inventory.get selectedSlot location.inventory of
-                                Just m ->
-                                    if Minion.hasLevel Minion.Debug 5 m then
-                                        [ Html.button [ Html.Events.onClick (ClickedResetLocation index) ] [ Html.text "Reset location" ] ]
-
-                                    else
-                                        []
-
-                                Nothing ->
-                                    []
-
-                        else
-                            []
-
-                    Nothing ->
-                        []
                 )
     in
     Html.div [ Html.Attributes.class "location" ]
         [ viewState
-        , viewActions
         , viewInventory selection index location.inventory
         ]
 

@@ -1,13 +1,13 @@
-module Content.Minions exposing (builder, debug)
+module Content.Minions exposing (beaver, debug)
 
 import Minion exposing (Minion)
 
 
 debug : Minion
 debug =
-    Minion.new '🐛' [ ( Minion.Debug, 10 ) ]
+    Minion.new '🐛' Minion.Debug
 
 
-builder : Minion
-builder =
-    Minion.new '\u{1F9AB}' [ ( Minion.Construction, 10 ) ]
+beaver : Minion
+beaver =
+    Minion.new '🦫' Minion.Woodcutting

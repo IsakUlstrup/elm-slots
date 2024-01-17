@@ -1,29 +1,56 @@
-module Minion exposing (Minion, Skill(..), hasLevel, new)
-
-import CustomDict exposing (Dict)
+module Minion exposing
+    ( Minion
+    , Skill(..)
+    , SkillAction
+    , new
+    , toString
+    )
 
 
 type Skill
     = Debug
-    | Construction
+    | Woodcutting
+    | Forestry
+
+
+skillToString : Skill -> String
+skillToString skill =
+    case skill of
+        Debug ->
+            "Debug"
+
+        Woodcutting ->
+            "Woodcutting"
+
+        Forestry ->
+            "Forestry"
+
+
+type SkillAction
+    = PlantTree
+    | CutTree
+    | ViewDebugState
+    | ResetLocation
 
 
 type alias Minion =
     { icon : Char
-    , skills : Dict Skill Int
+    , skill : Skill
+    , experience : Int
     }
 
 
-new : Char -> List ( Skill, Int ) -> Minion
-new icon skills =
-    Minion icon (CustomDict.fromList skills)
+new : Char -> Skill -> Minion
+new icon skill =
+    Minion icon skill 0
 
 
-hasLevel : Skill -> Int -> Minion -> Bool
-hasLevel skill level minion =
-    case CustomDict.get skill minion.skills of
-        Just s ->
-            s >= level
-
-        Nothing ->
-            False
+toString : Minion -> String
+toString minion =
+    "{icon: '"
+        ++ String.fromChar minion.icon
+        ++ "', skill: "
+        ++ skillToString minion.skill
+        ++ ", experience: "
+        ++ String.fromInt minion.experience
+        ++ "}"
