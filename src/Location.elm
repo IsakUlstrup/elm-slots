@@ -5,7 +5,7 @@ import Minion exposing (Minion, Skill)
 
 
 type LocationState
-    = Forest ( Float, Float ) Int
+    = Tree ( Float, Float )
     | None
 
 
@@ -18,16 +18,16 @@ type alias Location =
 tick : Float -> Location -> Location
 tick dt location =
     case location.state of
-        Forest ( cd, maxCd ) trees ->
+        Tree ( cd, maxCd ) ->
             let
                 newCd =
                     (cd + dt) |> min maxCd
             in
             if newCd >= maxCd then
-                { location | state = Forest ( 0, maxCd ) (trees + 1) }
+                { location | state = Tree ( 0, maxCd ) }
 
             else
-                { location | state = Forest ( newCd, maxCd ) trees }
+                { location | state = Tree ( newCd, maxCd ) }
 
         None ->
             location
@@ -39,8 +39,8 @@ reset location =
         None ->
             location
 
-        Forest ( _, maxCd ) _ ->
-            { location | state = Forest ( 0, maxCd ) 0 }
+        Tree _ ->
+            { location | state = None }
 
 
 hasSkill : Skill -> Int -> Location -> Bool

@@ -69,9 +69,9 @@ init _ =
                         |> Inventory.insert 1 (Item Minions.builder)
                     )
               )
-            , ( 0, Location (Location.Forest ( 0, 50000 ) 3) (Inventory.new 3) )
-            , ( 1, Location (Location.Forest ( 0, 50000 ) 2) (Inventory.new 3) )
-            , ( 2, Location (Location.Forest ( 0, 50000 ) 5) (Inventory.new 3) )
+            , ( 0, Location (Location.Tree ( 0, 50000 )) (Inventory.new 3) )
+            , ( 1, Location (Location.Tree ( 0, 50000 )) (Inventory.new 3) )
+            , ( 2, Location (Location.Tree ( 0, 50000 )) (Inventory.new 3) )
             ]
         )
         Nothing
@@ -142,14 +142,15 @@ update msg model =
 viewLocation : Maybe ( Int, Int ) -> ( Int, Location ) -> Html Msg
 viewLocation selection ( index, location ) =
     let
+        viewState : Html msg
         viewState =
             Html.div [ Html.Attributes.class "location-state" ]
                 (case location.state of
                     Location.None ->
                         []
 
-                    Location.Forest ( cd, maxCd ) trees ->
-                        [ Html.p [] [ Html.text ("Trees: " ++ String.fromInt trees) ]
+                    Location.Tree ( cd, maxCd ) ->
+                        [ Html.p [] [ Html.text "Tree" ]
                         , Html.progress
                             [ Html.Attributes.value (String.fromFloat cd)
                             , Html.Attributes.max (String.fromFloat maxCd)
@@ -158,6 +159,7 @@ viewLocation selection ( index, location ) =
                         ]
                 )
 
+        viewActions : Html Msg
         viewActions =
             Html.div [ Html.Attributes.class "actions" ]
                 (case selection of
