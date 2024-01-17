@@ -9,7 +9,7 @@ import Html.Attributes
 import Html.Events
 import Inventory exposing (Inventory, Slot(..))
 import Location exposing (Location)
-import Minion exposing (Minion)
+import Minion exposing (Minion, SkillAction)
 
 
 switchSlots : ( Int, Int ) -> ( Int, Int ) -> Dict Int Location -> Dict Int Location
@@ -65,8 +65,8 @@ init _ =
               , Location
                     Location.None
                     (Inventory.new 6
-                        |> Inventory.insert 0 (Item Minions.debug)
-                        |> Inventory.insert 1 (Item Minions.beaver)
+                        |> Inventory.insert 0 (Item (Minions.debug |> Minion.grantExperience 10000))
+                        |> Inventory.insert 1 (Item (Minions.beaver |> Minion.grantExperience 1000))
                     )
               )
             , ( 0, Location Location.None (Inventory.new 3) )
@@ -139,6 +139,11 @@ update msg model =
 -- VIEW
 
 
+viewAction : SkillAction -> Html Msg
+viewAction action =
+    Html.div [] [ Html.text (Minion.actionString action) ]
+
+
 viewLocation : Maybe ( Int, Int ) -> ( Int, Location ) -> Html Msg
 viewLocation selection ( index, location ) =
     let
@@ -166,9 +171,20 @@ viewLocation selection ( index, location ) =
                             ]
                         ]
                 )
+
+        viewActions : Html Msg
+        viewActions =
+            Html.div [ Html.Attributes.class "location-actions" ]
+                (location
+                    |> Location.minions
+                    |> List.map Minion.getActions
+                    |> List.concat
+                    |> List.map viewAction
+                )
     in
     Html.div [ Html.Attributes.class "location" ]
         [ viewState
+        , viewActions
         , viewInventory selection index location.inventory
         ]
 
