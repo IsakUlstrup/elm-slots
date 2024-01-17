@@ -69,8 +69,8 @@ init _ =
                         |> Inventory.insert 1 (Item Minions.builder)
                     )
               )
-            , ( 0, Location (Location.Tree ( 0, 50000 )) (Inventory.new 3) )
-            , ( 1, Location (Location.Tree ( 0, 50000 )) (Inventory.new 3) )
+            , ( 0, Location Location.None (Inventory.new 3) )
+            , ( 1, Location Location.None (Inventory.new 3) )
             , ( 2, Location (Location.Tree ( 0, 50000 )) (Inventory.new 3) )
             ]
         )
@@ -150,7 +150,15 @@ viewLocation selection ( index, location ) =
                         []
 
                     Location.Tree ( cd, maxCd ) ->
-                        [ Html.p [] [ Html.text "Tree" ]
+                        [ Html.h1 []
+                            [ Html.text
+                                (if cd == maxCd then
+                                    "🌲"
+
+                                 else
+                                    "🌱"
+                                )
+                            ]
                         , Html.progress
                             [ Html.Attributes.value (String.fromFloat cd)
                             , Html.Attributes.max (String.fromFloat maxCd)
@@ -184,11 +192,7 @@ viewLocation selection ( index, location ) =
                 )
     in
     Html.div [ Html.Attributes.class "location" ]
-        [ if Location.hasSkill Minion.Debug 10 location then
-            viewState
-
-          else
-            Html.p [] []
+        [ viewState
         , viewActions
         , viewInventory selection index location.inventory
         ]
