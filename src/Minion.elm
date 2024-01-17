@@ -8,6 +8,7 @@ module Minion exposing
     , grantExperience
     , new
     , skillActionString
+    , tick
     , toString
     )
 
@@ -69,16 +70,23 @@ actionString action =
             "ResetLocation"
 
 
+type MinionState
+    = Idle
+    | Recovering Float
+    | Action Action Float
+
+
 type alias Minion =
     { icon : Char
     , skill : Skill
     , experience : Int
+    , state : MinionState
     }
 
 
 new : Char -> Skill -> Minion
 new icon skill =
-    Minion icon skill 0
+    Minion icon skill 0 Idle
 
 
 deriveLevel : Minion -> Int
@@ -89,6 +97,19 @@ deriveLevel minion =
 grantExperience : Int -> Minion -> Minion
 grantExperience xp minion =
     { minion | experience = minion.experience + max 0 xp }
+
+
+tick : Float -> Minion -> Minion
+tick dt minion =
+    case minion.state of
+        Idle ->
+            minion
+
+        Recovering time ->
+            { minion | state = Recovering (max 0 (time - dt)) }
+
+        Action action time ->
+            { minion | state = Action action (max 0 (time - dt)) }
 
 
 filterAvailableAction : Int -> ( SkillAction, Int ) -> Maybe SkillAction

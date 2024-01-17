@@ -4,6 +4,7 @@ module Inventory exposing
     , any
     , get
     , insert
+    , map
     , new
     , remove
     , switch
@@ -61,6 +62,22 @@ insert index item (Inventory inventory) =
         Nothing ->
             -- slot does not exist, return unchanged
             Inventory inventory
+
+
+map : (a -> b) -> Inventory a -> Inventory b
+map f (Inventory inventory) =
+    Inventory
+        (Dict.map
+            (\_ slot ->
+                case slot of
+                    Item item ->
+                        Item (f item)
+
+                    Empty ->
+                        Empty
+            )
+            inventory
+        )
 
 
 {-| Remove item at index

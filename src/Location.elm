@@ -17,8 +17,8 @@ type alias Location =
     }
 
 
-tick : Float -> Location -> Location
-tick dt location =
+tickState : Float -> Location -> Location
+tickState dt location =
     case location.state of
         Sapling ( cd, maxCd ) ->
             { location | state = Sapling ( (cd + dt) |> min maxCd, maxCd ) }
@@ -31,6 +31,18 @@ tick dt location =
 
         None ->
             location
+
+
+tickMinions : Float -> Location -> Location
+tickMinions dt location =
+    { location | inventory = Inventory.map (Minion.tick dt) location.inventory }
+
+
+tick : Float -> Location -> Location
+tick dt location =
+    location
+        |> tickState dt
+        |> tickMinions dt
 
 
 minions : Location -> List Minion
