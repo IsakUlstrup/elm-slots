@@ -19,15 +19,7 @@ tick : Float -> Location -> Location
 tick dt location =
     case location.state of
         Tree ( cd, maxCd ) ->
-            let
-                newCd =
-                    (cd + dt) |> min maxCd
-            in
-            if newCd >= maxCd then
-                { location | state = Tree ( 0, maxCd ) }
-
-            else
-                { location | state = Tree ( newCd, maxCd ) }
+            { location | state = Tree ( (cd + dt) |> min maxCd, maxCd ) }
 
         None ->
             location
